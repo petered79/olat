@@ -2,10 +2,11 @@ import streamlit as st
 from openai import OpenAI
 import json
 import random
-import PyPDF2
-import docx
 import re
 import base64
+from pdf2image import convert_from_bytes
+from PIL import Image
+import io
 
 # Access API key from Streamlit secrets
 OPENAI_API_KEY = st.secrets["openai"]["api_key"]
@@ -42,18 +43,18 @@ def get_chatgpt_response(prompt, image=None):
                 ]
             }
         ]
-        model = "gpt-4o"  # Using GPT-4o mini for image tasks
+        model = "gpt-4-vision-preview"  # Using GPT-4 with vision capabilities
     else:
         messages = [
             {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in switzerland. if the user itself upload a test with Q&A, then you transform the original test into the specified formats."},
             {"role": "user", "content": prompt}
         ]
-        model = "gpt-4o"  # Using GPT-4o for text-only tasks
+        model = "gpt-4"  # Using GPT-4 for text-only tasks
 
     response = client.chat.completions.create(
         model=model,
         messages=messages,
-        max_tokens=4096
+        max_tokens=300
     )
     return response.choices[0].message.content
 
@@ -149,43 +150,55 @@ def transform_output(json_string):
         st.code(json_string)
         return "Error: Unable to process input"
 
-def extract_text_from_pdf(file):
-    pdf_reader = PyPDF2.PdfReader(file)
-    text = ""
-    for page in pdf_reader.pages:
-        text += page.extract_text()
-    return text
-
-def extract_text_from_docx(file):
-    doc = docx.Document(file)
-    text = ""
-    for paragraph in doc.paragraphs:
-        text += paragraph.text + "\n"
-    return text
+def convert_pdf_to_single_image(pdf_file):
+    # Convert PDF pages to images
+    images = convert_from_bytes(pdf_file.getvalue())
+    
+    # Calculate the total height of the combined image
+    total_height = sum(img.height for img in images)
+    max_width = max(img.width for img in images)
+    
+    # Create a new image with the calculated dimensions
+    combined_image = Image.new('RGB', (max_width, total_height))
+    
+    # Paste each page image into the combined image
+    y_offset = 0
+    for img in images:
+        combined_image.paste(img, (0, y_offset))
+        y_offset += img.height
+    
+    # Convert the image to bytes
+    img_byte_arr = io.BytesIO()
+    combined_image.save(img_byte_arr, format='PNG')
+    img_byte_arr = img_byte_arr.getvalue()
+    
+    return base64.b64encode(img_byte_arr).decode('utf-8')
 
 def main():
     st.title("OLAT Fragen Generator")
 
-    uploaded_file = st.file_uploader("Upload a PDF, DOCX, or image file", type=["pdf", "docx", "jpg", "jpeg", "png"])
+    content_type = st.radio("Choose input type:", ["Text Input", "Image Upload"])
 
-    text_content = ""
+    user_input = ""
     image_content = None
-    if uploaded_file is not None:
-        if uploaded_file.type in ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
-            if uploaded_file.type == "application/pdf":
-                text_content = extract_text_from_pdf(uploaded_file)
-            else:
-                text_content = extract_text_from_docx(uploaded_file)
-            st.success("Text extracted successfully. You can now edit it in the text area below.")
-        elif uploaded_file.type.startswith('image/'):
-            image_bytes = uploaded_file.getvalue()
-            image_content = base64.b64encode(image_bytes).decode('utf-8')
-            st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
-            st.success("Image uploaded successfully. You can now ask questions about the image.")
-        else:
-            st.error("Unsupported file type. Please upload a PDF, DOCX, or image file.")
 
-    user_input = st.text_area("Enter your text or question about the image:", value=text_content)
+    if content_type == "Text Input":
+        user_input = st.text_area("Enter your text:")
+    else:
+        uploaded_file = st.file_uploader("Upload a PDF or image file", type=["pdf", "jpg", "jpeg", "png"])
+        if uploaded_file is not None:
+            if uploaded_file.type == "application/pdf":
+                image_content = convert_pdf_to_single_image(uploaded_file)
+                st.image(f"data:image/png;base64,{image_content}", caption='Converted PDF', use_column_width=True)
+                st.success("PDF converted to image successfully. You can now ask questions about the image.")
+            elif uploaded_file.type.startswith('image/'):
+                image_bytes = uploaded_file.getvalue()
+                image_content = base64.b64encode(image_bytes).decode('utf-8')
+                st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
+                st.success("Image uploaded successfully. You can now ask questions about the image.")
+            else:
+                st.error("Unsupported file type. Please upload a PDF or image file.")
+
     learning_goals = st.text_area("Learning Goals (Optional):")
 
     selected_types = st.multiselect("Select question types to generate:", MESSAGE_TYPES)
@@ -220,7 +233,7 @@ def main():
                     mime="text/plain"
                 )
         elif not user_input and not image_content:
-            st.warning("Please enter some text, upload a file, or upload an image.")
+            st.warning("Please enter some text or upload an image/PDF.")
         elif not selected_types:
             st.warning("Please select at least one question type.")
 
