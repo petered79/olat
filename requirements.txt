@@ -1,5 +1,4 @@
-streamlit
-openai
-Pillow
-pdf2image
-pybase64
+streamlit==1.38.0
+openai==1.44.1
+PyPDF2==3.0.1
+python-docx==1.1.2
