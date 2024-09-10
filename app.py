@@ -42,7 +42,7 @@ def get_chatgpt_response(prompt, image=None):
                 ]
             }
         ]
-        model = "gpt-4o-mini"  # Using GPT-4o mini for image tasks
+        model = "gpt-4o"  # Using GPT-4o mini for image tasks
     else:
         messages = [
             {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in switzerland. if the user itself upload a test with Q&A, then you transform the original test into the specified formats."},
@@ -53,7 +53,7 @@ def get_chatgpt_response(prompt, image=None):
     response = client.chat.completions.create(
         model=model,
         messages=messages,
-        max_tokens=300
+        max_tokens=8000
     )
     return response.choices[0].message.content
 
