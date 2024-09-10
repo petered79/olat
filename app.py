@@ -53,7 +53,7 @@ def get_chatgpt_response(prompt, image=None):
     response = client.chat.completions.create(
         model=model,
         messages=messages,
-        max_tokens=8000
+        max_tokens=4096
     )
     return response.choices[0].message.content
 
