@@ -163,6 +163,31 @@ def extract_text_from_docx(file):
         text += paragraph.text + "\n"
     return text
 
+import streamlit as st
+from openai import OpenAI
+import json
+import random
+import PyPDF2
+import docx
+import re
+import base64
+
+# Access API key from Streamlit secrets
+OPENAI_API_KEY = st.secrets["openai"]["api_key"]
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+# List of available message types
+MESSAGE_TYPES = [
+    "single_choice",
+    "multiple_choice",
+    "kprim",
+    "truefalse",
+    "draganddrop",
+    "inline_fib"
+]
+
+# ... (previous functions remain unchanged)
+
 def main():
     st.title("OLAT Fragen Generator")
 
@@ -193,6 +218,7 @@ def main():
     if st.button("Generate Questions"):
         if (user_input or image_content) and selected_types:
             all_responses = ""
+            generated_content = {}
             for msg_type in selected_types:
                 prompt_template = read_prompt_from_md(msg_type)
                 full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
@@ -202,15 +228,18 @@ def main():
                     
                     if msg_type == "inline_fib":
                         processed_response = transform_output(response)
-                        st.subheader(f"Generated and Processed Response for JSON Format:")
-                        st.text(processed_response)
+                        generated_content[f"{msg_type.replace('_', ' ').title()} (Processed)"] = processed_response
                         all_responses += f"{processed_response}\n\n"
                     else:
-                        st.subheader(f"Generated Response for {msg_type.replace('_', ' ').title()}:")
-                        st.write(response)
+                        generated_content[msg_type.replace('_', ' ').title()] = response
                         all_responses += f"{response}\n\n"
                 except Exception as e:
                     st.error(f"An error occurred for {msg_type}: {str(e)}")
+            
+            # Display titles of generated content with checkmarks
+            st.subheader("Generated Content:")
+            for title in generated_content.keys():
+                st.write(f"✔ {title}")
             
             if all_responses:
                 st.download_button(
