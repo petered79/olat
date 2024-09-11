@@ -163,38 +163,18 @@ def extract_text_from_docx(file):
         text += paragraph.text + "\n"
     return text
 
-import streamlit as st
-from openai import OpenAI
-import json
-import random
-import PyPDF2
-import docx
-import re
-import base64
-
-# Access API key from Streamlit secrets
-OPENAI_API_KEY = st.secrets["openai"]["api_key"]
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-# List of available message types
-MESSAGE_TYPES = [
-    "single_choice",
-    "multiple_choice",
-    "kprim",
-    "truefalse",
-    "draganddrop",
-    "inline_fib"
-]
-
-# ... (previous functions remain unchanged)
-
 def main():
     st.title("OLAT Fragen Generator")
 
+    # File upload option
     uploaded_file = st.file_uploader("Upload a PDF, DOCX, or image file", type=["pdf", "docx", "jpg", "jpeg", "png"])
+
+    # Image paste option
+    pasted_image = st.image_input("Or paste an image here:")
 
     text_content = ""
     image_content = None
+
     if uploaded_file is not None:
         if uploaded_file.type in ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
             if uploaded_file.type == "application/pdf":
@@ -209,6 +189,12 @@ def main():
             st.success("Image uploaded successfully. You can now ask questions about the image.")
         else:
             st.error("Unsupported file type. Please upload a PDF, DOCX, or image file.")
+    elif pasted_image is not None:
+        # Convert pasted image to base64
+        buffered = BytesIO()
+        pasted_image.save(buffered, format="PNG")
+        image_content = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        st.success("Image pasted successfully. You can now ask questions about the image.")
 
     user_input = st.text_area("Enter your text or question about the image:", value=text_content)
     learning_goals = st.text_area("Learning Goals (Optional):")
@@ -249,7 +235,7 @@ def main():
                     mime="text/plain"
                 )
         elif not user_input and not image_content:
-            st.warning("Please enter some text, upload a file, or upload an image.")
+            st.warning("Please enter some text, upload a file, or paste an image.")
         elif not selected_types:
             st.warning("Please select at least one question type.")
 
