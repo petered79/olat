@@ -27,16 +27,18 @@ def read_prompt_from_md(filename):
     with open(f"{filename}.md", "r") as file:
         return file.read()
 
-def get_chatgpt_response(prompt, image=None):
+ddef get_chatgpt_response(prompt, image=None):
     if image:
-        messages = [
-            {
-                "role": "user",
-                "content": prompt,
-                "image": image  # Directly include the image in the message
-            }
-        ]
-        model = "gpt-4-vision"  # Updated model name
+        model = "gpt-4-vision"
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=4000,
+            image=image  # Pass the image using the image parameter
+        )
+
     else:
         messages = [
             {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in Switzerland. If the user uploads a test with Q&A, then you transform the original test into the specified formats."},
