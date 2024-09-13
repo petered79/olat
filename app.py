@@ -59,6 +59,69 @@ def process_image(_image):
 
     return base64.b64encode(img_byte_arr).decode('utf-8')
 
+def clean_json_string(s):
+    s = s.strip()
+    s = re.sub(r'^```json\s*', '', s)
+    s = re.sub(r'\s*```$', '', s)
+    s = re.sub(r'\s+', ' ', s)
+    s = re.sub(r'(?<=text": ")(.+?)(?=")', lambda m: m.group(1).replace('\n', '\\n'), s)
+    s = ''.join(char for char in s if ord(char) >= 32 or char == '\n')
+    match = re.search(r'\[.*\]', s, re.DOTALL)
+    return match.group(0) if match else s
+
+def convert_json_to_text_format(json_input):
+    if isinstance(json_input, str):
+        data = json.loads(json_input)
+    else:
+        data = json_input
+
+    fib_output = []
+    ic_output = []
+
+    for item in data:
+        text = item.get('text', '')
+        blanks = item.get('blanks', [])
+        wrong_substitutes = item.get('wrong_substitutes', [])
+
+        num_blanks = len(blanks)
+
+        fib_lines = [
+            "Type\tFIB",
+            "Title\t✏✏Vervollständigen Sie die Lücken mit dem korrekten Begriff.✏✏",
+            f"Points\t{num_blanks}"
+        ]
+
+        for blank in blanks:
+            text = text.replace(blank, "{blank}", 1)
+
+        parts = text.split("{blank}")
+        for index, part in enumerate(parts):
+            fib_lines.append(f"Text\t{part.strip()}")
+            if index < len(blanks):
+                fib_lines.append(f"1\t{blanks[index]}\t20")
+
+        fib_output.append('\n'.join(fib_lines))
+
+        ic_lines = [
+            "Type\tInlinechoice",
+            "Title\tWörter einordnen",
+            "Question\t✏✏Wählen Sie die richtigen Wörter.✏✏",
+            f"Points\t{num_blanks}"
+        ]
+
+        all_options = blanks + wrong_substitutes
+        random.shuffle(all_options)
+
+        for index, part in enumerate(parts):
+            ic_lines.append(f"Text\t{part.strip()}")
+            if index < len(blanks):
+                options_str = '|'.join(all_options)
+                ic_lines.append(f"1\t{options_str}\t{blanks[index]}\t|")
+
+        ic_output.append('\n'.join(ic_lines))
+
+    return '\n\n'.join(fib_output), '\n\n'.join(ic_output)
+
 def transform_output(json_string):
     try:
         cleaned_json_string = clean_json_string(json_string)
