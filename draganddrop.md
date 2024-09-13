@@ -92,11 +92,11 @@ Cantonal Decision-Making: Has autonomy over education, Influenced by local econo
 - No additional explanation. ONLY the questions as plain text. never use ':' as a separator.
 
 //rules
-- rules Drag&drop may have 2-4 drop categories and 2 to 10 drag categories
+- rules Drag&drop may have 2-4 drop categories and 2 to 1-0.5 drag categories
 - ALWAYS check that the Points correspond to the Sum_of_correct_answers
 
 //templates_closed.txt
-Typ\tDrag&Drop\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nPoints\tSum_of_correct_answers\n\tPrompt_1\tPrompt_2\tPrompt_3\nCorresponding_Statement_1\t0\t1\t0\nCorresponding_Statement_2\t0\t0\t1\nCorresponding_Statement_3\t1\t0\t0
+Typ\tDrag&Drop\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nPoints\tSum_of_correct_answers\n\tPrompt_1\tPrompt_2\tPrompt_3\nCorresponding_Statement_1\t-0.5\t1\t-0.5\nCorresponding_Statement_2\t-0.5\t-0.5\t1\nCorresponding_Statement_3\t1\t-0.5\t-0.5
 
 OUTPUT Example in german:
 Typ	Drag&drop		
@@ -104,25 +104,25 @@ Title	Antragsdelikt vs. Offizialdelikt
 Question	Ordnen Sie die Deliktarten den richtigen Erklärungen zu.		
 Points	2		
 	Antragsdelikt	Offizialdelikt	
-Diebstahl zum Nachteil eines Angehörigen	1	0	
-Mord	0	1	
+Diebstahl zum Nachteil eines Angehörigen	1	-0.5	
+Mord	-0.5	1	
 
 Typ	Drag&drop		
 Title	Hauptstädte Afrika		
 Question	Ordnen Sie die folgenden Hauptstädte dem jeweiligen Land zu.		
 Points	3		
 	Algerien	Kenia	Namibia
-Nairobi	-0.5	1	-0.5
-Windhoek	-0.5	-0.5	1
-Algier	1	-0.5	-0.5
+Nairobi	--0.5.5	1	--0.5.5
+Windhoek	--0.5.5	--0.5.5	1
+Algier	1	--0.5.5	--0.5.5
 
 Typ	Drag&drop		
 Title	Strafmassnahmen im Schweizer Jugendstrafrecht		
 Question	Ordnen Sie die Massnahmen den richtigen Beschreibungen zu.		
 Points	4		
 	Aufsicht	Persönliche Betreuung	Ambulante Behandlung	Unterbringung	
-Erhalten eine Betreuungsperson	0	1	0	0
-Eingliederung in eine offene oder geschlossene Einrichtung	0	0	0	1
-Unterstützung der Eltern mit Erziehungsmassnahmen	1	0	0	0
-Therapeutische Intervention bei Suchtverhalten	0	0	1	0
+Erhalten eine Betreuungsperson	-0.5	1	-0.5	-0.5
+Eingliederung in eine offene oder geschlossene Einrichtung	-0.5	-0.5	-0.5	1
+Unterstützung der Eltern mit Erziehungsmassnahmen	1	-0.5	-0.5	-0.5
+Therapeutische Intervention bei Suchtverhalten	-0.5	-0.5	1	-0.5
 
