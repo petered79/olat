@@ -16,8 +16,17 @@ Question Type: For recall-based tasks
 Design Approach:
 Focus on recognition and recall of facts.
 Use straightforward questions that require identification of correct information.
-Example:
-"How many members are in the Swiss Federal Council? "
+Question:
+How many members are in the Swiss Federal Council?
+a) 5
+b) 6
+c) 7
+d) 8
+Correct Answer: c) 7
+Distractors Explanation:
+5 and 6 are plausible as they are close to the actual number.
+8 could seem possible if someone thinks the council might include additional roles.
+
 
 # Bloom Level: 'comprehension'
 Question Type: Questions at this level assess comprehension and interpretation
@@ -25,7 +34,16 @@ Design Approach:
 Emphasize explanation of ideas or concepts.
 Questions should assess comprehension through interpretation or summary.
 Example:
-"Which of the following best describes the role of cantonal governments in Switzerland?"
+Which of the following best describes the role of cantonal governments in Switzerland?
+a) They are responsible for foreign policy decisions.
+b) They handle local education, healthcare, and policing.
+c) They have full control over the Swiss military.
+d) They manage all economic policies within Switzerland.
+Correct Answer: b) They handle local education, healthcare, and policing.
+Distractors Explanation:
+a) Foreign policy is handled at the federal level, but could confuse learners.
+c) Military is a federal responsibility, but could sound logical.
+d) Economic policy is partially cantonal but mainly federal.
 
 # Bloom Level: 'application'
 Question Type: Application-based questions evaluate practical knowledge.
@@ -33,7 +51,16 @@ Design Approach:
 Questions should require the application of knowledge in new situations.
 Include scenarios that necessitate the use of learned concepts in practical contexts.
 Example:
-"If a canton wants to introduce a new educational reform that differs from federal standards, which of the following steps is necessary? "
+If a canton wants to introduce a new educational reform that differs from federal standards, which of the following steps is necessary?
+a) Submit the proposal directly to the Swiss Parliament for immediate approval.
+b) Implement the reform at the cantonal level without further consultation.
+c) Collaborate with the Federal Department of Home Affairs and hold a cantonal referendum.
+d) File a petition to the European Union for support on the reform.
+Correct Answer: c) Collaborate with the Federal Department of Home Affairs and hold a cantonal referendum.
+Distractors Explanation:
+a) Swiss Parliament is not the first step for cantonal reform.
+b) Cantons can't bypass federal alignment without a process.
+d) The EU doesn’t have authority over Swiss education.
 
 # Bloom Level: 'Analysis'
 Question Type: Analysis-based questions focus on breaking down information into its components, examining relationships, and identifying patterns.
@@ -42,7 +69,17 @@ Questions should require learners to distinguish between different components, e
 Include scenarios that prompt learners to compare, contrast, or classify information to show deeper understanding.
 Encourage identification of causes, motives, or evidence to support conclusions.
 Example: 
-"How do the differences between direct democracy at the federal level and the cantonal level influence the decision-making processes in Switzerland? Analyze the key factors that contribute to these differences."
+Which of the following factors most contributes to the differences in decision-making between federal and cantonal governments in Switzerland?
+a) The Swiss Federal Constitution gives equal decision-making power to all cantons.
+b) Cantonal governments have more autonomy in areas such as taxation and education.
+c) The cantonal governments rely entirely on federal guidance for all local matters.
+d) Direct democracy is practiced only at the federal level, limiting cantonal influence.
+Correct Answer: b) Cantonal governments have more autonomy in areas such as taxation and education.
+Distractors Explanation:
+a) While cantons are given significant powers, it's not equal across all areas.
+c) Cantons do have autonomy and don’t rely entirely on federal guidance.
+d) Direct democracy exists at both the cantonal and federal levels.
+
 //output
 - OUTPUT should only include the generated questions
 - ALWAYS generate 3 questions one for each bloom taxonomy knowledge, comprehension, application 
