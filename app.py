@@ -185,6 +185,17 @@ def extract_text_from_docx(file):
     text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
     return text.strip()
 
+def process_pdf(file):
+    text_content = extract_text_from_pdf(file)
+    
+    # If no text is found, assume it's a non-OCR PDF
+    if not text_content or not is_pdf_ocr(text_content):
+        st.warning("This PDF is not OCRed. Text extraction failed. Please upload an OCRed PDF.")
+        return None, convert_pdf_to_images(file)  # Fallback to image processing
+    else:
+        return text_content, None
+
+
 def main():
     """Main function for the Streamlit app."""
     st.title("OLAT Fragen Generator")
