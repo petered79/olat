@@ -27,7 +27,7 @@ def read_prompt_from_md(filename):
     with open(f"{filename}.md", "r") as file:
         return file.read()
 
-ddef get_chatgpt_response(prompt, image=None):
+def get_chatgpt_response(prompt, image=None):
     if image:
         model = "gpt-4-vision"
         response = openai.ChatCompletion.create(
