@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI  # Corrected the import
+from openai import OpenAI
 import json
 import random
 import PyPDF2
@@ -59,6 +59,12 @@ def process_image(_image):
 
     return base64.b64encode(img_byte_arr).decode('utf-8')
 
+def transform_output(response):
+    """Transform the output for inline fill-in-the-blank questions."""
+    # Placeholder logic to handle inline_fib type responses
+    # Modify this function as per your requirements
+    return response
+
 def get_chatgpt_response(prompt, image=None):
     """Fetch response from OpenAI GPT with error handling."""
     try:
@@ -85,7 +91,6 @@ def get_chatgpt_response(prompt, image=None):
                 {"role": "user", "content": prompt}
             ]
 
-        # New API: client.completions.create
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=messages,
