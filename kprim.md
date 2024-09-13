@@ -48,7 +48,7 @@ Example:
 //templates_closed.txt
 Typ\tKPRIM\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nPoints\t5\n+\tcorrect_answer_placeholder_1\n-\tincorrect_answer_placeholder_1\n-\tincorrect_answer_placeholder_1\n+\tcorrect_answer_placeholder_1
 
-OUTPUT Example:
+OUTPUT Example in german:
 Typ	KPRIM
 Title	Fussball: Weltmeister
 Question	Die folgenden Länder haben die Fussball Weltmeistertitel bereits mehr als einmal gewonnen.
