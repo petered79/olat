@@ -155,12 +155,19 @@ def transform_output(json_string):
         return "Error: Unable to process input"
 
 
-def get_chatgpt_response(prompt, image=None):
+def get_chatgpt_response(prompt, image=None, selected_language="English"):
     """Fetch response from OpenAI GPT with error handling."""
     try:
+        # Step 2: Create a system prompt that includes language instruction
+        system_prompt = (
+            "You are specialized in generating Q&A in specific formats. "
+            f"Please generate all responses in {selected_language}."
+        )
+        
         if image:
             base64_image = process_image(image)
             messages = [
+                {"role": "system", "content": system_prompt},
                 {
                     "role": "user",
                     "content": [
@@ -177,7 +184,7 @@ def get_chatgpt_response(prompt, image=None):
             ]
         else:
             messages = [
-                {"role": "system", "content": "You are specialized in generating Q&A in specific formats..."},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ]
 
@@ -211,7 +218,7 @@ def process_images(images):
             else:
                 st.warning(f"Please enter text and select question types for Page {idx+1}.")
 
-def generate_questions_with_image(user_input, learning_goals, selected_types, image):
+def generate_questions_with_image(user_input, learning_goals, selected_types, image, selected_language):
     """Generate questions for the image and handle errors."""
     all_responses = ""
     generated_content = {}
@@ -219,7 +226,8 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
         prompt_template = read_prompt_from_md(msg_type)  # Now it will load multiple_choice1, multiple_choice2, etc.
         full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
         try:
-            response = get_chatgpt_response(full_prompt, image=image)
+            # Step 3: Pass selected_language to get_chatgpt_response
+            response = get_chatgpt_response(full_prompt, image=image, selected_language=selected_language)
             if response:
                 if msg_type == "inline_fib":
                     processed_response = transform_output(response)
@@ -285,6 +293,18 @@ def main():
     """Main function for the Streamlit app."""
     st.title("OLAT Fragen Generator")
 
+    # Step 1: Language selection using radio buttons
+    st.subheader("Select the Language for Generated Questions:")
+    languages = {
+        "German": "German",
+        "English": "English",
+        "French": "French",
+        "Italian": "Italian",
+        "Spanish": "Spanish"
+    }
+    selected_language = st.radio("Choose the language for output:", list(languages.values()), index=0)
+
+    # File uploader section
     uploaded_file = st.file_uploader("Upload a PDF, DOCX, or image file", type=["pdf", "docx", "jpg", "jpeg", "png"])
 
     text_content = ""
@@ -309,6 +329,7 @@ def main():
         else:
             st.error("Unsupported file type. Please upload a PDF, DOCX, or image file.")
 
+    # Process images if any, otherwise process text or image content
     if images:
         process_images(images)
     else:
@@ -340,7 +361,8 @@ def main():
         # Generate questions button
         if st.button("Generate Questions"):
             if user_input or image_content and selected_types:
-                generate_questions_with_image(user_input, learning_goals, selected_types, image_content)              
+                # Step 2: Pass the selected_language to the function
+                generate_questions_with_image(user_input, learning_goals, selected_types, image_content, selected_language)              
             elif not user_input and not image_content:
                 st.warning("Please enter some text, upload a file, or upload an image.")
             elif not selected_types:
