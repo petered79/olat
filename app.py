@@ -344,7 +344,7 @@ def main():
         **Multiple Choice:**
         - All multiple-choice questions have a **maximum of 3 points**.
         - **multiple_choice1.md**: **1 out of 4** correct answers
-        - **multiple_choice2.md**: **2 out of 4 correct answers
+        - **multiple_choice2.md**: **2 out of 4** correct answers
         - **multiple_choice3.md**: **3 out of 4** correct answers
         - **multiple_choice4.md**: **4 out of 4** correct answers
         """)
@@ -361,7 +361,7 @@ def main():
         # Generate questions button
         if st.button("Generate Questions"):
             if user_input or image_content and selected_types:
-                # Step 2: Pass the selected_language to the function
+                # Ensure that the selected_language is passed to the function
                 generate_questions_with_image(user_input, learning_goals, selected_types, image_content, selected_language)              
             elif not user_input and not image_content:
                 st.warning("Please enter some text, upload a file, or upload an image.")
