@@ -49,7 +49,7 @@ Example:
 //templates_closed.txt
 Typ\tSC\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nPoints\tAnswer Value\n1\tcorrect_answer_placeholder_1\n-0.5\tincorrect_answer_placeholder_1\n-0.5\tincorrect_answer_placeholder_2\n-0.5\tincorrect_answer_placeholder_3
 
-OUTPUT Example:
+OUTPUT Example in german:
 Typ	SC
 Title	Fussball: Gewinner
 Question	Welche Mannschaft gewann 1982 die Fussball Weltmeisterschaft?
