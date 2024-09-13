@@ -321,19 +321,19 @@ def main():
         # Explanation about MC types
         st.markdown("""
         **Multiple Choice:**
-        - All multiple-choice questions have a maximum of 3 points.
-        - **multiple_choice1.md**: 1 out of 4 correct answers
-        - **multiple_choice2.md**: 2 out of 4 correct answers
-        - **multiple_choice3.md**: 3 out of 4 correct answers
-        - **multiple_choice4.md**: 4 out of 4 correct answers
+        - All multiple-choice questions have a **maximum of 3 points**.
+        - **multiple_choice1.md**: **1 out of 4** correct answers
+        - **multiple_choice2.md**: **2 out of 4 correct answers
+        - **multiple_choice3.md**: **3 out of 4** correct answers
+        - **multiple_choice4.md**: **4 out of 4** correct answers
         """)
         st.markdown("""
         **Inline/FiB:**
-        - Warning: The Inline und FiB questions are identical in content. FiB = type the missing word. Inline = choose the missing word
+        - Warning: The **Inline** und **FiB** questions are identical in content. FiB = **type** the missing word. Inline = **choose** the missing word
         """)
         st.markdown("""
         **Cost Information:**
-        - The cost of usage depends on the length of the input (ranging from $0.01 to $0.1).
+        - The cost of usage depends on the **length of the input** (ranging from $0.01 to $0.1).
         - Each selected question type will cost approximately $0.01.
         """)
 
