@@ -326,6 +326,8 @@ def main():
         - **multiple_choice2.md**: 2 out of 4 correct answers
         - **multiple_choice3.md**: 3 out of 4 correct answers
         - **multiple_choice4.md**: 4 out of 4 correct answers
+        """)
+        st.markdown("""
         **Cost Information:**
         - The cost of usage depends on the length of the input (ranging from $0.01 to $0.1).
         - Each selected question type will cost approximately $0.01.
