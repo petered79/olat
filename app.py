@@ -51,7 +51,7 @@ def process_image(_image):
         img = img.convert('RGB')
 
     # Resize if the image is too large
-    max_size = 800  # Reduced max size to reduce memory consumption
+    max_size = 1000  # Reduced max size to reduce memory consumption
     if max(img.size) > max_size:
         img.thumbnail((max_size, max_size))
 
