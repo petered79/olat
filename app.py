@@ -23,7 +23,6 @@ MESSAGE_TYPES = [
     "multiple_choice1",
     "multiple_choice2",
     "multiple_choice3",
-    "multiple_choice4",
     "kprim",
     "truefalse",
     "draganddrop",
@@ -365,7 +364,6 @@ def main():
         - **multiple_choice1.md**: **1 out of 4** correct answers
         - **multiple_choice2.md**: **2 out of 4** correct answers
         - **multiple_choice3.md**: **3 out of 4** correct answers
-        - **multiple_choice4.md**: **4 out of 4** correct answers
         """)
         st.markdown("""
         **Inline/FiB:**
