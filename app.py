@@ -214,13 +214,14 @@ def convert_pdf_to_images(file):
         image_buffers.append(img_buffer)
     return image_buffers
 
-
-def extract_text_from_docx(file):
-    doc = docx.Document(file)
-    text = ""
-    for paragraph in doc.paragraphs:
-        text += paragraph.text + "\n"
-    return text
+def process_pdf(file):
+    text_content = extract_text_from_pdf(file)
+    if is_pdf_ocr(text_content):
+        return text_content, None
+    else:
+        file.seek(0)  # Reset file pointer
+        images = convert_pdf_to_images(file)
+        return None, images
 
 def main():
     st.title("OLAT Fragen Generator")
@@ -229,12 +230,18 @@ def main():
 
     text_content = ""
     image_content = None
+    images = []
+
     if uploaded_file is not None:
-        if uploaded_file.type in ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
-            if uploaded_file.type == "application/pdf":
-                text_content = extract_text_from_pdf(uploaded_file)
+        if uploaded_file.type == "application/pdf":
+            text_content, pdf_images = process_pdf(uploaded_file)
+            if pdf_images:
+                images = pdf_images
+                st.success("PDF converted to images. You can now ask questions about each page.")
             else:
-                text_content = extract_text_from_docx(uploaded_file)
+                st.success("Text extracted from PDF. You can now edit it in the text area below.")
+        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            text_content = extract_text_from_docx(uploaded_file)
             st.success("Text extracted successfully. You can now edit it in the text area below.")
         elif uploaded_file.type.startswith('image/'):
             image_bytes = uploaded_file.getvalue()
@@ -244,48 +251,51 @@ def main():
         else:
             st.error("Unsupported file type. Please upload a PDF, DOCX, or image file.")
 
-    user_input = st.text_area("Enter your text or question about the image:", value=text_content)
-    learning_goals = st.text_area("Learning Goals (Optional):")
+    if images:
+        process_images(images)
+    else:
+        user_input = st.text_area("Enter your text or question about the image:", value=text_content)
+        learning_goals = st.text_area("Learning Goals (Optional):")
 
-    selected_types = st.multiselect("Select question types to generate:", MESSAGE_TYPES)
+        selected_types = st.multiselect("Select question types to generate:", MESSAGE_TYPES)
 
-    if st.button("Generate Questions"):
-        if (user_input or image_content) and selected_types:
-            all_responses = ""
-            generated_content = {}
-            for msg_type in selected_types:
-                prompt_template = read_prompt_from_md(msg_type)
-                full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
-                
-                try:
-                    response = get_chatgpt_response(full_prompt, image_content)
+        if st.button("Generate Questions"):
+            if (user_input or image_content) and selected_types:
+                all_responses = ""
+                generated_content = {}
+                for msg_type in selected_types:
+                    prompt_template = read_prompt_from_md(msg_type)
+                    full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
                     
-                    if msg_type == "inline_fib":
-                        processed_response = transform_output(response)
-                        generated_content[f"{msg_type.replace('_', ' ').title()} (Processed)"] = processed_response
-                        all_responses += f"{processed_response}\n\n"
-                    else:
-                        generated_content[msg_type.replace('_', ' ').title()] = response
-                        all_responses += f"{response}\n\n"
-                except Exception as e:
-                    st.error(f"An error occurred for {msg_type}: {str(e)}")
-            
-            # Display titles of generated content with checkmarks
-            st.subheader("Generated Content:")
-            for title in generated_content.keys():
-                st.write(f"✔ {title}")
-            
-            if all_responses:
-                st.download_button(
-                    label="Download All Responses",
-                    data=all_responses,
-                    file_name="all_responses.txt",
-                    mime="text/plain"
-                )
-        elif not user_input and not image_content:
-            st.warning("Please enter some text, upload a file, or upload an image.")
-        elif not selected_types:
-            st.warning("Please select at least one question type.")
+                    try:
+                        response = get_chatgpt_response(full_prompt, image_content)
+                        
+                        if msg_type == "inline_fib":
+                            processed_response = transform_output(response)
+                            generated_content[f"{msg_type.replace('_', ' ').title()} (Processed)"] = processed_response
+                            all_responses += f"{processed_response}\n\n"
+                        else:
+                            generated_content[msg_type.replace('_', ' ').title()] = response
+                            all_responses += f"{response}\n\n"
+                    except Exception as e:
+                        st.error(f"An error occurred for {msg_type}: {str(e)}")
+                
+                # Display titles of generated content with checkmarks
+                st.subheader("Generated Content:")
+                for title in generated_content.keys():
+                    st.write(f"✔ {title}")
+                
+                if all_responses:
+                    st.download_button(
+                        label="Download All Responses",
+                        data=all_responses,
+                        file_name="all_responses.txt",
+                        mime="text/plain"
+                    )
+            elif not user_input and not image_content:
+                st.warning("Please enter some text, upload a file, or upload an image.")
+            elif not selected_types:
+                st.warning("Please select at least one question type.")
 
 if __name__ == "__main__":
     main()
