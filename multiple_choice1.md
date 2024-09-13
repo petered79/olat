@@ -18,11 +18,12 @@
 - No additional explanation. ONLY the questions as plain text. never use ':' as a separator.
 
 //rules
-- ALWAYS generate 4 Answers 
-- ALWAYS maximal 3 Points according to the following rules
+ALWAYS generate 1 correct_answers
+ALWAYS generate 3 incorrect_answers
+ALWAYS maximal 3 Points according to the following rules
       
 //templates_closed.txt
-Typ\tMC\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nMax answers\t4\nMin answers\t0\nPoints\t3\n1\tcorrect_answer_placeholder_1\n-0.5\tincorrect_answer_placeholder_1\n-0.5\tincorrect_answer_placeholder_2\n-0.5\tincorrect_answer_placeholder_3
+Typ\tMC\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nMax answers\t4\nMin answers\t0\nPoints\t3\n3\tcorrect_answer_placeholder_1\n-0.5\tincorrect_answer_placeholder_1\n-0.5\tincorrect_answer_placeholder_2\n-0.5\tincorrect_answer_placeholder_3
 
 OUTPUT Example:
 Typ	MC
@@ -31,7 +32,7 @@ Question	Welches Land hat noch nie eine WM gewonnen?
 Max answers	4
 Min answers	0
 Points	3
--1	Deutschland
--1	Brasilien
--1	Südafrika
+-0.5	Deutschland
+-0.5	Brasilien
+-0.5	Südafrika
 3	Schweiz
