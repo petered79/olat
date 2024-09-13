@@ -374,7 +374,7 @@ def main():
         - The cost of usage depends on the **length of the input** (ranging from $0.01 to $0.1).
         - Each selected question type will cost approximately $0.01.
         """)
-         st.markdown("""
+        st.markdown("""
         **Other Question Types:**
         - single_choice 4 Answers, 1 Point per Question
         - KPRIM 4 Answers, 5 Points 4/4 correct, 2.5 Points 3/4 correct, 0 Points 50% or less correct
