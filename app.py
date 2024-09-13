@@ -29,30 +29,33 @@ def read_prompt_from_md(filename):
 
 def get_chatgpt_response(prompt, image=None):
     if image:
-        # Convert image to base64
-        image_base64 = base64.b64encode(image.getvalue()).decode('utf-8')
         messages = [
             {
                 "role": "user",
                 "content": [
                     {"type": "text", "text": prompt},
-                    {"type": "image_url", "image_url": f"data:image/jpeg;base64,{image_base64}"}
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{image}",
+                            "detail": "low"  # Always use low detail for images
+                        }
+                    }
                 ]
             }
         ]
-        model = "gpt-4-vision-preview"
-
+        model = "gpt-4-vision-preview"  # Correct model for vision tasks
     else:
         messages = [
-            {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in Switzerland. If the user uploads a test with Q&A, then you transform the original test into the specified formats."},
+            {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in switzerland. if the user itself upload a test with Q&A, then you transform the original test into the specified formats."},
             {"role": "user", "content": prompt}
         ]
-        model = "gpt-4o"
-    
+        model = "gpt-4o"  # Using GPT-4 for text-only tasks
+
     response = client.chat.completions.create(
         model=model,
         messages=messages,
-        max_tokens=4000
+        max_tokens=4000  # Increased max_tokens for more comprehensive responses
     )
     return response.choices[0].message.content
 
@@ -224,123 +227,65 @@ def main():
 
     uploaded_file = st.file_uploader("Upload a PDF, DOCX, or image file", type=["pdf", "docx", "jpg", "jpeg", "png"])
 
+    text_content = ""
+    image_content = None
     if uploaded_file is not None:
-        if uploaded_file.type == "application/pdf":
-            # Extract text from the PDF
-            text_content = extract_text_from_pdf(uploaded_file)
-            # Reset the file pointer to the beginning
-            uploaded_file.seek(0)
-            # Check if the PDF is OCRed
-            if is_pdf_ocr(text_content):
-                st.success("Text extracted successfully. Processing with GPT-4o.")
-                process_text_input(text_content)
+        if uploaded_file.type in ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]:
+            if uploaded_file.type == "application/pdf":
+                text_content = extract_text_from_pdf(uploaded_file)
             else:
-                st.warning("No extractable text found. Converting PDF pages to images for GPT-4o Vision.")
-                images = convert_pdf_to_images(uploaded_file)
-                process_images(images)
-        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            text_content = extract_text_from_docx(uploaded_file)
-            st.success("Text extracted successfully from DOCX. Processing with GPT-4o.")
-            process_text_input(text_content)
+                text_content = extract_text_from_docx(uploaded_file)
+            st.success("Text extracted successfully. You can now edit it in the text area below.")
         elif uploaded_file.type.startswith('image/'):
             image_bytes = uploaded_file.getvalue()
+            image_content = base64.b64encode(image_bytes).decode('utf-8')
             st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
-            st.success("Image uploaded successfully. Processing with GPT-4 Vision.")
-            process_images([io.BytesIO(image_bytes)])
+            st.success("Image uploaded successfully. You can now ask questions about the image.")
         else:
             st.error("Unsupported file type. Please upload a PDF, DOCX, or image file.")
-    else:
-        st.info("Please upload a file to proceed.")
 
-def process_text_input(text_content):
-    user_input = st.text_area("Enter your text or question:", value=text_content)
+    user_input = st.text_area("Enter your text or question about the image:", value=text_content)
     learning_goals = st.text_area("Learning Goals (Optional):")
+
     selected_types = st.multiselect("Select question types to generate:", MESSAGE_TYPES)
+
     if st.button("Generate Questions"):
-        if user_input and selected_types:
-            generate_questions(user_input, learning_goals, selected_types)
-        else:
-            st.warning("Please enter some text and select at least one question type.")
-
-def process_images(images):
-    for idx, image in enumerate(images):
-        st.image(image, caption=f'Page {idx+1}', use_column_width=True)
-        user_input = st.text_area(f"Enter your question or instructions for Page {idx+1}:", key=f"text_area_{idx}")
-        learning_goals = st.text_area(f"Learning Goals for Page {idx+1} (Optional):", key=f"learning_goals_{idx}")
-        selected_types = st.multiselect(f"Select question types for Page {idx+1}:", MESSAGE_TYPES, key=f"selected_types_{idx}")
-        if st.button(f"Generate Questions for Page {idx+1}", key=f"generate_button_{idx}"):
-            if user_input and selected_types:
-                generate_questions_with_image(user_input, learning_goals, selected_types, image)
-            else:
-                st.warning(f"Please enter text and select question types for Page {idx+1}.")
-
-def generate_questions(user_input, learning_goals, selected_types):
-    all_responses = ""
-    generated_content = {}
-    for msg_type in selected_types:
-        prompt_template = read_prompt_from_md(msg_type)
-        full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
-        try:
-            response = get_chatgpt_response(full_prompt)
-            if msg_type == "inline_fib":
-                processed_response = transform_output(response)
-                generated_content[f"{msg_type.replace('_', ' ').title()} (Processed)"] = processed_response
-                all_responses += f"{processed_response}\n\n"
-            else:
-                generated_content[msg_type.replace('_', ' ').title()] = response
-                all_responses += f"{response}\n\n"
-        except Exception as e:
-            st.error(f"An error occurred for {msg_type}: {str(e)}")
-    st.subheader("Generated Content:")
-    for title, content in generated_content.items():
-        st.markdown(f"### {title}")
-        st.code(content)
-
-def generate_questions_with_image(user_input, learning_goals, selected_types, image):
-    all_responses = ""
-    generated_content = {}
-    for msg_type in selected_types:
-        prompt_template = read_prompt_from_md(msg_type)
-        full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
-        try:
-            image_bytes = image.getvalue()
-            response = get_chatgpt_response(full_prompt, image=image_bytes)
-            if msg_type == "inline_fib":
-                processed_response = transform_output(response)
-                generated_content[f"{msg_type.replace('_', ' ').title()} (Processed)"] = processed_response
-                all_responses += f"{processed_response}\n\n"
-            else:
-                generated_content[msg_type.replace('_', ' ').title()] = response
-                all_responses += f"{response}\n\n"
-        except Exception as e:
-            st.error(f"An error occurred for {msg_type}: {str(e)}")
-    st.subheader("Generated Content:")
-    for title, content in generated_content.items():
-        st.markdown(f"### {title}")
-        st.code(content)
-
-def get_chatgpt_response(prompt, image=None):
-    if image:
-        messages = [
-            {
-                "role": "user",
-                "content": prompt,
-                "image": image  # Include the image in the message
-            }
-        ]
-        model = "gpt-4-vision"
-    else:
-        messages = [
-            {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in Switzerland. If the user uploads a test with Q&A, then you transform the original test into the specified formats."},
-            {"role": "user", "content": prompt}
-        ]
-        model = "gpt-4o"
-    response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        max_tokens=1000
-    )
-    return response.choices[0].message.content
+        if (user_input or image_content) and selected_types:
+            all_responses = ""
+            generated_content = {}
+            for msg_type in selected_types:
+                prompt_template = read_prompt_from_md(msg_type)
+                full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
+                
+                try:
+                    response = get_chatgpt_response(full_prompt, image_content)
+                    
+                    if msg_type == "inline_fib":
+                        processed_response = transform_output(response)
+                        generated_content[f"{msg_type.replace('_', ' ').title()} (Processed)"] = processed_response
+                        all_responses += f"{processed_response}\n\n"
+                    else:
+                        generated_content[msg_type.replace('_', ' ').title()] = response
+                        all_responses += f"{response}\n\n"
+                except Exception as e:
+                    st.error(f"An error occurred for {msg_type}: {str(e)}")
+            
+            # Display titles of generated content with checkmarks
+            st.subheader("Generated Content:")
+            for title in generated_content.keys():
+                st.write(f"✔ {title}")
+            
+            if all_responses:
+                st.download_button(
+                    label="Download All Responses",
+                    data=all_responses,
+                    file_name="all_responses.txt",
+                    mime="text/plain"
+                )
+        elif not user_input and not image_content:
+            st.warning("Please enter some text, upload a file, or upload an image.")
+        elif not selected_types:
+            st.warning("Please select at least one question type.")
 
 if __name__ == "__main__":
     main()
