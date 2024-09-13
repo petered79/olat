@@ -6,8 +6,9 @@ import PyPDF2
 import docx
 import re
 import base64
-from pdf2image import convert_from_bytes  # New import
+from pdf2image import convert_from_bytes
 import io
+from PIL import Image
 
 # Access API key from Streamlit secrets
 OPENAI_API_KEY = st.secrets["openai"]["api_key"]
