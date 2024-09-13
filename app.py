@@ -59,11 +59,35 @@ def process_image(_image):
 
     return base64.b64encode(img_byte_arr).decode('utf-8')
 
-def transform_output(response):
-    """Transform the output for inline fill-in-the-blank questions."""
-    # Placeholder logic to handle inline_fib type responses
-    # Modify this function as per your requirements
-    return response
+def transform_output(json_string):
+    try:
+        cleaned_json_string = clean_json_string(json_string)
+        json_data = json.loads(cleaned_json_string)
+        fib_output, ic_output = convert_json_to_text_format(json_data)
+        return f"{ic_output}\n---\n{fib_output}"
+    except json.JSONDecodeError as e:
+        st.error(f"Error parsing JSON: {e}")
+        st.text("Cleaned input:")
+        st.code(cleaned_json_string, language='json')
+        st.text("Original input:")
+        st.code(json_string)
+        
+        try:
+            if not cleaned_json_string.strip().endswith(']'):
+                cleaned_json_string += ']'
+            partial_json = json.loads(cleaned_json_string)
+            st.warning("Attempted to salvage partial JSON. Results may be incomplete.")
+            fib_output, ic_output = convert_json_to_text_format(partial_json)
+            return f"{ic_output}\n---\n{fib_output}"
+        except:
+            st.error("Unable to salvage partial JSON.")
+            return "Error: Invalid JSON format"
+    except Exception as e:
+        st.error(f"Error processing input: {str(e)}")
+        st.text("Original input:")
+        st.code(json_string)
+        return "Error: Unable to process input"
+
 
 def get_chatgpt_response(prompt, image=None):
     """Fetch response from OpenAI GPT with error handling."""
