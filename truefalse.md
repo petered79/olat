@@ -49,7 +49,7 @@ Example:
 //templates_closed.txt
 Typ\tTruefalse\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nPoints\tSum_of_correct_answer\n\tUnanswered\tRight\tWrong\tcorrect_answer_placeholder_1\t0\t1\t-0.5\tcorrect_answer_placeholder_1\t0\t1\t-0.5\tincorrect_answer_placeholder_1\t0\t-0.5\t1
 
-OUTPUT Example:
+OUTPUT Example in german:
 Typ	Truefalse		
 Title	Hauptstädte Europa		
 Question	Sind die folgenden Aussagen richtig oder falsch?		
