@@ -3,8 +3,7 @@
 2. read the text and identify key topics to be understood
 3. read the //rules below
 4. generate {fill the blanks texts} with at least 6 sentences or 70-100 words.
-5. You always answer in German or in the Language of the upload
-6. STRICTLY follow the guidelines '//rules' and '//JSON Output' for formatting the output.
+5. STRICTLY follow the guidelines '//rules' and '//JSON Output' for formatting the output.
 
 
 //rules
