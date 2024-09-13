@@ -357,13 +357,6 @@ def main():
         # Select question types to generate
         selected_types = st.multiselect("Select question types to generate:", MESSAGE_TYPES)
         
-        # Cost Information
-        st.markdown('''
-        > **ℹ️ Cost Information:**
-        > - The cost of usage depends on the **length of the input** (ranging from $0.01 to $0.1).
-        > - Each selected question type will cost approximately $0.01.
-        ''')
-        
         # Custom CSS for light blue background in info callouts
         st.markdown(
             """
