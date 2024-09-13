@@ -26,7 +26,7 @@
 //templates_closed.txt
 Typ\tMC\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nMax answers\t4\nMin answers\t0\nPoints\t3\n1.5\tcorrect_answer_placeholder_1\n1.5\tcorrect_answer_placeholder_2\n-0.5\tincorrect_answer_placeholder_1\n-0.5\tincorrect_answer_placeholder_2
 
-OUTPUT Example:
+OUTPUT Example in german:
 Typ	MC
 Title	Fussball: WM-Titeln
 Question	Welche Ländern haben mindestens eine WM gewonnen?
