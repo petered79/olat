@@ -1,5 +1,5 @@
 import streamlit as st
-import openai  # Corrected the import
+from openai import OpenAI  # Corrected the import
 import json
 import random
 import PyPDF2
@@ -14,8 +14,8 @@ import logging
 # Set up logging for better error tracking
 logging.basicConfig(level=logging.INFO)
 
-# Access API key from Streamlit secrets
-openai.api_key = st.secrets["openai"]["api_key"]
+# Initialize OpenAI client
+client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 
 # List of available message types
 MESSAGE_TYPES = [
@@ -85,11 +85,13 @@ def get_chatgpt_response(prompt, image=None):
                 {"role": "user", "content": prompt}
             ]
 
-        response = openai.ChatCompletion.create(
-            model="gpt-4o",  # Corrected to match actual OpenAI model name
+        # New API: client.completions.create
+        response = client.chat.completions.create(
+            model="gpt-4o",
             messages=messages,
             max_tokens=4000
         )
+        
         return response.choices[0].message.content
     except Exception as e:
         st.error(f"Error communicating with OpenAI API: {e}")
@@ -106,16 +108,13 @@ def process_images(images):
         learning_goals = st.text_area(f"Learning Goals for Page {idx+1} (Optional):", key=f"learning_goals_{idx}")
         selected_types = st.multiselect(f"Select question types for Page {idx+1}:", MESSAGE_TYPES, key=f"selected_types_{idx}")
 
-        # Handle button click directly without session state
+        # Button to generate questions for the page
         if st.button(f"Generate Questions for Page {idx}", key=f"generate_button_{idx}"):
             # Only generate questions if there is user input and selected question types
             if user_input and selected_types:
                 generate_questions_with_image(user_input, learning_goals, selected_types, image)
             else:
                 st.warning(f"Please enter text and select question types for Page {idx+1}.")
-
-
-
 
 def generate_questions_with_image(user_input, learning_goals, selected_types, image):
     """Generate questions for the image and handle errors."""
@@ -186,7 +185,6 @@ def process_pdf(file):
         return None, convert_pdf_to_images(file)  # Fallback to image processing
     else:
         return text_content, None
-
 
 def main():
     """Main function for the Streamlit app."""
