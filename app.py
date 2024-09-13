@@ -314,11 +314,32 @@ def main():
     else:
         user_input = st.text_area("Enter your text or question about the image:", value=text_content)
         learning_goals = st.text_area("Learning Goals (Optional):")
+        
+        # Select question types to generate
         selected_types = st.multiselect("Select question types to generate:", MESSAGE_TYPES)
+        
+        # Explanation about MC types
+        st.markdown("""
+        **Explanation:**
+        - All multiple-choice questions have a maximum of 3 points.
+        - **multiple_choice1.md**: 1 out of 4 correct answers
+        - **multiple_choice2.md**: 2 out of 4 correct answers
+        - **multiple_choice3.md**: 3 out of 4 correct answers
+        - **multiple_choice4.md**: 4 out of 4 correct answers
+        """)
 
+        # Generate questions button
         if st.button("Generate Questions"):
             if user_input or image_content and selected_types:
                 generate_questions_with_image(user_input, learning_goals, selected_types, image_content)
+                
+                # Cost explanation below the generate button
+                st.markdown("""
+                **Cost Information:**
+                - The cost of usage depends on the length of the input (ranging from $0.01 to $0.1).
+                - Each selected question type will cost approximately $0.01.
+                """)
+                
             elif not user_input and not image_content:
                 st.warning("Please enter some text, upload a file, or upload an image.")
             elif not selected_types:
