@@ -29,15 +29,18 @@ def read_prompt_from_md(filename):
 
 def get_chatgpt_response(prompt, image=None):
     if image:
-        model = "gpt-4-vision"
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=[
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=4000,
-            image=image  # Pass the image using the image parameter
-        )
+        # Convert image to base64
+        image_base64 = base64.b64encode(image.getvalue()).decode('utf-8')
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": f"data:image/jpeg;base64,{image_base64}"}
+                ]
+            }
+        ]
+        model = "gpt-4-vision-preview"
 
     else:
         messages = [
@@ -49,10 +52,43 @@ def get_chatgpt_response(prompt, image=None):
     response = client.chat.completions.create(
         model=model,
         messages=messages,
-        max_tokens=300
+        max_tokens=4000
     )
     return response.choices[0].message.content
 
+def process_images(images):
+    for idx, image in enumerate(images):
+        st.image(image, caption=f'Page {idx+1}', use_column_width=True)
+        user_input = st.text_area(f"Enter your question or instructions for Page {idx+1}:", key=f"text_area_{idx}")
+        learning_goals = st.text_area(f"Learning Goals for Page {idx+1} (Optional):", key=f"learning_goals_{idx}")
+        selected_types = st.multiselect(f"Select question types for Page {idx+1}:", MESSAGE_TYPES, key=f"selected_types_{idx}")
+        if st.button(f"Generate Questions for Page {idx+1}", key=f"generate_button_{idx}"):
+            if user_input and selected_types:
+                generate_questions_with_image(user_input, learning_goals, selected_types, image)
+            else:
+                st.warning(f"Please enter text and select question types for Page {idx+1}.")
+
+def generate_questions_with_image(user_input, learning_goals, selected_types, image):
+    all_responses = ""
+    generated_content = {}
+    for msg_type in selected_types:
+        prompt_template = read_prompt_from_md(msg_type)
+        full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
+        try:
+            response = get_chatgpt_response(full_prompt, image=image)
+            if msg_type == "inline_fib":
+                processed_response = transform_output(response)
+                generated_content[f"{msg_type.replace('_', ' ').title()} (Processed)"] = processed_response
+                all_responses += f"{processed_response}\n\n"
+            else:
+                generated_content[msg_type.replace('_', ' ').title()] = response
+                all_responses += f"{response}\n\n"
+        except Exception as e:
+            st.error(f"An error occurred for {msg_type}: {str(e)}")
+    st.subheader("Generated Content:")
+    for title, content in generated_content.items():
+        st.markdown(f"### {title}")
+        st.code(content)
 
 def clean_json_string(s):
     s = s.strip()
