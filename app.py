@@ -77,7 +77,7 @@ def get_chatgpt_response(prompt, image=None):
         model = "gpt-4o"
     else:
         messages = [
-            {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in switzerland. if the user itself upload a test with Q&A, then you transform the original test into the specified formats."},
+            {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in Switzerland. If the user uploads a test with Q&A, then you transform the original test into the specified formats."},
             {"role": "user", "content": prompt}
         ]
         model = "gpt-4o"
@@ -118,10 +118,18 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
                 all_responses += f"{response}\n\n"
         except Exception as e:
             st.error(f"An error occurred for {msg_type}: {str(e)}")
+    # Display titles of generated content with checkmarks
     st.subheader("Generated Content:")
-    for title, content in generated_content.items():
-        st.markdown(f"### {title}")
-        st.code(content)
+    for title in generated_content.keys():
+        st.write(f"✔ {title}")
+    # Download button for all responses
+    if all_responses:
+        st.download_button(
+            label="Download All Responses",
+            data=all_responses,
+            file_name="all_responses.txt",
+            mime="text/plain"
+        )
 
 def clean_json_string(s):
     s = s.strip()
@@ -253,6 +261,13 @@ def process_pdf(file):
         images = convert_pdf_to_images(file)
         return None, images
 
+def extract_text_from_docx(file):
+    doc = docx.Document(file)
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text.strip()
+
 def main():
     st.title("OLAT Fragen Generator")
 
@@ -314,6 +329,7 @@ def main():
                 for title in generated_content.keys():
                     st.write(f"✔ {title}")
                 
+                # Download button for all responses
                 if all_responses:
                     st.download_button(
                         label="Download All Responses",
