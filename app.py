@@ -20,7 +20,10 @@ client = OpenAI(api_key=st.secrets["openai"]["api_key"])
 # List of available message types
 MESSAGE_TYPES = [
     "single_choice",
-    "multiple_choice",
+    "multiple_choice1",
+    "multiple_choice2",
+    "multiple_choice3",
+    "multiple_choice4",
     "kprim",
     "truefalse",
     "draganddrop",
@@ -213,7 +216,7 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
     all_responses = ""
     generated_content = {}
     for msg_type in selected_types:
-        prompt_template = read_prompt_from_md(msg_type)
+        prompt_template = read_prompt_from_md(msg_type)  # Now it will load multiple_choice1, multiple_choice2, etc.
         full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
         try:
             response = get_chatgpt_response(full_prompt, image=image)
