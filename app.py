@@ -30,19 +30,7 @@ def read_prompt_from_md(filename):
 
 def get_chatgpt_response(prompt, image=None):
     if image:
-        # Ensure the image is in bytes format
-        if isinstance(image, str):
-            # If it's a base64 string, decode it
-            image_bytes = base64.b64decode(image)
-        elif isinstance(image, bytes):
-            image_bytes = image
-        else:
-            # If it's a file-like object (e.g., BytesIO), read it
-            image_bytes = image.getvalue()
-
-        # Convert to base64
-        base64_image = base64.b64encode(image_bytes).decode('utf-8')
-
+        base64_image = process_image(image)
         messages = [
             {
                 "role": "user",
@@ -58,13 +46,13 @@ def get_chatgpt_response(prompt, image=None):
                 ]
             }
         ]
-        model = "gpt-4o"  # Use the correct model for vision tasks
+        model = "gpt-4o"
     else:
         messages = [
             {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in switzerland. if the user itself upload a test with Q&A, then you transform the original test into the specified formats."},
             {"role": "user", "content": prompt}
         ]
-        model = "gpt-4o"  # Use GPT-4 for text-only tasks
+        model = "gpt-4o"
 
     response = client.chat.completions.create(
         model=model,
@@ -106,7 +94,6 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
     for title, content in generated_content.items():
         st.markdown(f"### {title}")
         st.code(content)
-
 
 def clean_json_string(s):
     s = s.strip()
@@ -259,9 +246,8 @@ def main():
             text_content = extract_text_from_docx(uploaded_file)
             st.success("Text extracted successfully. You can now edit it in the text area below.")
         elif uploaded_file.type.startswith('image/'):
-            image_bytes = uploaded_file.getvalue()
-            image_content = image_bytes  # Store as bytes
-            st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
+            image_content = Image.open(uploaded_file)
+            st.image(image_content, caption='Uploaded Image', use_column_width=True)
             st.success("Image uploaded successfully. You can now ask questions about the image.")
         else:
             st.error("Unsupported file type. Please upload a PDF, DOCX, or image file.")
@@ -314,5 +300,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
