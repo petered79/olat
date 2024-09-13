@@ -28,6 +28,34 @@ def read_prompt_from_md(filename):
     with open(f"{filename}.md", "r") as file:
         return file.read()
 
+def process_image(image):
+    if isinstance(image, (str, bytes)):
+        # If it's a string (base64) or bytes, open it with Pillow
+        img = Image.open(io.BytesIO(base64.b64decode(image) if isinstance(image, str) else image))
+    elif isinstance(image, Image.Image):
+        # If it's already a Pillow Image, use it directly
+        img = image
+    else:
+        # If it's a file-like object, read and open it
+        img = Image.open(image)
+
+    # Convert to RGB mode if it's not
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+
+    # Resize if the image is too large
+    max_size = 2000  # OpenAI's max is 2048x2048
+    if max(img.size) > max_size:
+        img.thumbnail((max_size, max_size))
+
+    # Save to bytes
+    img_byte_arr = io.BytesIO()
+    img.save(img_byte_arr, format='JPEG')
+    img_byte_arr = img_byte_arr.getvalue()
+
+    return base64.b64encode(img_byte_arr).decode('utf-8')
+
+
 def get_chatgpt_response(prompt, image=None):
     if image:
         base64_image = process_image(image)
