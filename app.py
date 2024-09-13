@@ -29,6 +29,19 @@ def read_prompt_from_md(filename):
 
 def get_chatgpt_response(prompt, image=None):
     if image:
+        # Ensure the image is in bytes format
+        if isinstance(image, str):
+            # If it's a base64 string, decode it
+            image_bytes = base64.b64decode(image)
+        elif isinstance(image, bytes):
+            image_bytes = image
+        else:
+            # If it's a file-like object (e.g., BytesIO), read it
+            image_bytes = image.getvalue()
+
+        # Convert to base64
+        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+
         messages = [
             {
                 "role": "user",
@@ -37,25 +50,25 @@ def get_chatgpt_response(prompt, image=None):
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": f"data:image/jpeg;base64,{image}",
-                            "detail": "low"  # Always use low detail for images
+                            "url": f"data:image/jpeg;base64,{base64_image}",
+                            "detail": "low"
                         }
                     }
                 ]
             }
         ]
-        model = "gpt-4o"  # Correct model for vision tasks
+        model = "gpt-4o"  # Use the correct model for vision tasks
     else:
         messages = [
             {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in switzerland. if the user itself upload a test with Q&A, then you transform the original test into the specified formats."},
             {"role": "user", "content": prompt}
         ]
-        model = "gpt-4o"  # Using GPT-4 for text-only tasks
+        model = "gpt-4o"  # Use GPT-4 for text-only tasks
 
     response = client.chat.completions.create(
         model=model,
         messages=messages,
-        max_tokens=4000  # Increased max_tokens for more comprehensive responses
+        max_tokens=4000
     )
     return response.choices[0].message.content
 
@@ -92,6 +105,7 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
     for title, content in generated_content.items():
         st.markdown(f"### {title}")
         st.code(content)
+
 
 def clean_json_string(s):
     s = s.strip()
@@ -245,7 +259,7 @@ def main():
             st.success("Text extracted successfully. You can now edit it in the text area below.")
         elif uploaded_file.type.startswith('image/'):
             image_bytes = uploaded_file.getvalue()
-            image_content = base64.b64encode(image_bytes).decode('utf-8')
+            image_content = image_bytes  # Store as bytes
             st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
             st.success("Image uploaded successfully. You can now ask questions about the image.")
         else:
@@ -299,3 +313,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
