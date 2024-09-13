@@ -364,36 +364,89 @@ def main():
         > - Each selected question type will cost approximately $0.01.
         ''')
         
-        # Explanation about question types
+        # Custom CSS for light blue background in info callouts
+        st.markdown(
+            """
+            <style>
+            .custom-info {
+                background-color: #e7f3fe;
+                padding: 10px;
+                border-radius: 5px;
+                border-left: 6px solid #2196F3;
+            }
+            .custom-success {
+                background-color: #d4edda;
+                padding: 10px;
+                border-radius: 5px;
+                border-left: 6px solid #28a745;
+            }
+            .custom-warning {
+                background-color: #fff3cd;
+                padding: 10px;
+                border-radius: 5px;
+                border-left: 6px solid #ffc107;
+            }
+            </style>
+            """, unsafe_allow_html=True
+        )
+        
+        # Cost Information with custom info callout style
         st.markdown('''
-        > **✅ Multiple Choice Questions:**
-        > - All multiple-choice questions have a **maximum of 3 points**.
-        > - **multiple_choice1**: **1 out of 4** correct answers.
-        > - **multiple_choice2**: **2 out of 4** correct answers.
-        > - **multiple_choice3**: **3 out of 4** correct answers.
-        ''')
+        <div class="custom-info">
+            <strong>ℹ️ Cost Information:</strong>
+            <ul>
+                <li>The cost of usage depends on the <strong>length of the input</strong> (ranging from $0.01 to $0.1).</li>
+                <li>Each selected question type will cost approximately $0.01.</li>
+            </ul>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+        # Question types with success style
+        st.markdown('''
+        <div class="custom-success">
+            <strong>✅ Multiple Choice Questions:</strong>
+            <ul>
+                <li>All multiple-choice questions have a <strong>maximum of 3 points</strong>.</li>
+                <li><strong>multiple_choice1</strong>: 1 out of 4 correct answers.</li>
+                <li><strong>multiple_choice2</strong>: 2 out of 4 correct answers.</li>
+                <li><strong>multiple_choice3</strong>: 3 out of 4 correct answers.</li>
+            </ul>
+        </div>
+        ''', unsafe_allow_html=True)
         
         st.markdown('''
-        > **✅ Inline/FIB Questions:**
-        > - The **Inline** and **FiB** questions are identical in content. 
-        > - FiB = **type** the missing word.
-        > - Inline = **choose** the missing word.
-        ''')
+        <div class="custom-success">
+            <strong>✅ Inline/FIB Questions:</strong>
+            <ul>
+                <li>The <strong>Inline</strong> and <strong>FiB</strong> questions are identical in content.</li>
+                <li>FiB = type the missing word.</li>
+                <li>Inline = choose the missing word.</li>
+            </ul>
+        </div>
+        ''', unsafe_allow_html=True)
         
         st.markdown('''
-        > **✅ Other Question Types:**
-        > - **Single Choice:** 4 Answers, 1 Point per Question.
-        > - **KPRIM:** 4 Answers, 5 Points (4/4 correct), 2.5 Points (3/4 correct), 0 Points (50% or less correct).
-        > - **True/False:** 3 Answers, 3 Points per Question.
-        > - **Drag & Drop:** Variable Points.
-        ''')
+        <div class="custom-success">
+            <strong>✅ Other Question Types:</strong>
+            <ul>
+                <li><strong>Single Choice</strong>: 4 Answers, 1 Point per Question.</li>
+                <li><strong>KPRIM</strong>: 4 Answers, 5 Points (4/4 correct), 2.5 Points (3/4 correct), 0 Points (50% or less correct).</li>
+                <li><strong>True/False</strong>: 3 Answers, 3 Points per Question.</li>
+                <li><strong>Drag & Drop</strong>: Variable Points.</li>
+            </ul>
+        </div>
+        ''', unsafe_allow_html=True)
         
-        # Important Warnings
+        # Warnings with custom warning style
         st.markdown('''
-        > **⚠️ Warnings:**
-        > - **Always double-check that Total Points = Sum of correct answers' Points.**
-        > - **Always double-check the content of the answers.**
-        ''')
+        <div class="custom-warning">
+            <strong>⚠️ Warnings:</strong>
+            <ul>
+                <li><strong>Always double-check that Total Points = Sum of correct answers' Points.</strong></li>
+                <li><strong>Always double-check the content of the answers.</strong></li>
+            </ul>
+        </div>
+        ''', unsafe_allow_html=True)
 
     
         # Generate questions button
