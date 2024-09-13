@@ -57,7 +57,7 @@ Example:
 //templates_closed.txt
 Typ\tDrag&Drop\nTitle\tgeneral_title_of_the_question\nQuestion\tgeneral_question_text_placeholder\nPoints\tSum_of_correct_answer\n\tPrompt_1\tPrompt_2\tPrompt_3\nCorresponding_Statement_1\t0\t1\t0\nCorresponding_Statement_2\t0\t0\t1\nCorresponding_Statement_3\t1\t0\t0
 
-OUTPUT Example:
+OUTPUT Example in german:
 Typ	Drag&drop		
 Title	Hauptstädte Afrika		
 Question	Ordnen Sie die folgenden Hauptstädte dem jeweiligen Land zu.		
