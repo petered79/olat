@@ -44,7 +44,7 @@ def get_chatgpt_response(prompt, image=None):
                 ]
             }
         ]
-        model = "gpt-4-vision"  # Correct model for vision tasks
+        model = "gpt-4o"  # Correct model for vision tasks
     else:
         messages = [
             {"role": "system", "content": "You are specialized in generating Q&A in specific formats according to the instructions of the user. The questions are used in a vocational school in switzerland. if the user itself upload a test with Q&A, then you transform the original test into the specified formats."},
