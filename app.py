@@ -34,14 +34,14 @@ def read_prompt_from_md(filename):
         return file.read()
 
 @st.cache_data
-def process_image(image):
+def process_image(_image):
     """Process and resize an image to reduce memory footprint."""
-    if isinstance(image, (str, bytes)):
-        img = Image.open(io.BytesIO(base64.b64decode(image) if isinstance(image, str) else image))
-    elif isinstance(image, Image.Image):
-        img = image
+    if isinstance(_image, (str, bytes)):
+        img = Image.open(io.BytesIO(base64.b64decode(_image) if isinstance(_image, str) else _image))
+    elif isinstance(_image, Image.Image):
+        img = _image
     else:
-        img = Image.open(image)
+        img = Image.open(_image)
 
     # Convert to RGB mode if it's not
     if img.mode != 'RGB':
