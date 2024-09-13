@@ -62,6 +62,11 @@ def process_image(_image):
 
     return base64.b64encode(img_byte_arr).decode('utf-8')
 
+def replace_german_sharp_s(text):
+    """Replace all occurrences of 'ß' with 'ss'."""
+    return text.replace('ß', 'ss')
+
+
 def clean_json_string(s):
     s = s.strip()
     s = re.sub(r'^```json\s*', '', s)
@@ -130,8 +135,14 @@ def transform_output(json_string):
         cleaned_json_string = clean_json_string(json_string)
         json_data = json.loads(cleaned_json_string)
         fib_output, ic_output = convert_json_to_text_format(json_data)
+        
+        # Apply the cleaning function here
+        fib_output = replace_german_sharp_s(fib_output)
+        ic_output = replace_german_sharp_s(ic_output)
+
         return f"{ic_output}\n---\n{fib_output}"
     except json.JSONDecodeError as e:
+
         st.error(f"Error parsing JSON: {e}")
         st.text("Cleaned input:")
         st.code(cleaned_json_string, language='json')
@@ -224,10 +235,9 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
     all_responses = ""
     generated_content = {}
     for msg_type in selected_types:
-        prompt_template = read_prompt_from_md(msg_type)  # Now it will load multiple_choice1, multiple_choice2, etc.
+        prompt_template = read_prompt_from_md(msg_type)
         full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
         try:
-            # Step 3: Pass selected_language to get_chatgpt_response
             response = get_chatgpt_response(full_prompt, image=image, selected_language=selected_language)
             if response:
                 if msg_type == "inline_fib":
@@ -241,6 +251,9 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
                 st.error(f"Failed to generate a response for {msg_type}.")
         except Exception as e:
             st.error(f"An error occurred for {msg_type}: {str(e)}")
+    
+    # Apply cleaning function to all responses
+    all_responses = replace_german_sharp_s(all_responses)
 
     # Display generated content with checkmarks
     st.subheader("Generated Content:")
@@ -255,6 +268,7 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
             file_name="all_responses.txt",
             mime="text/plain"
         )
+
 
 @st.cache_data
 def convert_pdf_to_images(file):
