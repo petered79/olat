@@ -36,7 +36,6 @@ def read_prompt_from_md(filename):
     with open(f"{filename}.md", "r") as file:
         return file.read()
 
-@st.cache_data
 def process_image(_image):
     """Process and resize an image to reduce memory footprint."""
     if isinstance(_image, (str, bytes)):
@@ -326,6 +325,11 @@ def main():
     image_content = None
     images = []
 
+    
+    # Reset cache when a new file is uploaded
+    if uploaded_file:
+        st.cache_data.clear()  # This clears the cache to avoid previous cached values
+    
     if uploaded_file is not None:
         if uploaded_file.type == "application/pdf":
             text_content = extract_text_from_pdf(uploaded_file)
