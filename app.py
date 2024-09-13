@@ -161,7 +161,7 @@ def get_chatgpt_response(prompt, image=None, selected_language="English"):
         # Step 2: Create a system prompt that includes language instruction
         system_prompt = (
             "You are specialized in generating Q&A in specific formats. "
-            f"Please generate all responses in {selected_language}."
+            f"ALWAYS generate all questions and responses in {selected_language}."
         )
         
         if image:
