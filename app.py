@@ -106,19 +106,9 @@ def process_images(images):
         learning_goals = st.text_area(f"Learning Goals for Page {idx+1} (Optional):", key=f"learning_goals_{idx}")
         selected_types = st.multiselect(f"Select question types for Page {idx+1}:", MESSAGE_TYPES, key=f"selected_types_{idx}")
 
-        # Ensure that session state is initialized for each button before rendering the button
-        if f"generate_button_{idx}" not in st.session_state:
-            st.session_state[f"generate_button_{idx}"] = False
-
         # Button to generate questions for the page
-        generate_pressed = st.button(f"Generate Questions for Page {idx+1}", key=f"generate_button_{idx}")
-
-        # Update session state only after the button is pressed
-        if generate_pressed:
-            st.session_state[f"generate_button_{idx}"] = True
-
-        # Handle the button press logic
-        if st.session_state[f"generate_button_{idx}"]:
+        if st.button(f"Generate Questions for Page {idx+1}", key=f"generate_button_{idx}"):
+            # Only generate questions if there is user input and selected question types
             if user_input and selected_types:
                 generate_questions_with_image(user_input, learning_goals, selected_types, image)
             else:
