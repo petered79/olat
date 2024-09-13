@@ -200,7 +200,7 @@ def get_chatgpt_response(prompt, image=None, selected_language="English"):
         logging.error(f"Error communicating with OpenAI API: {e}")
         return None
 
-def process_images(images):
+def process_images(images, selected_language):
     """Process uploaded images and generate questions."""
     for idx, image in enumerate(images):
         st.image(image, caption=f'Page {idx+1}', use_column_width=True)
@@ -214,7 +214,8 @@ def process_images(images):
         if st.button(f"Generate Questions for Page {idx}", key=f"generate_button_{idx}"):
             # Only generate questions if there is user input and selected question types
             if user_input and selected_types:
-                generate_questions_with_image(user_input, learning_goals, selected_types, image)
+                # Pass the selected_language here
+                generate_questions_with_image(user_input, learning_goals, selected_types, image, selected_language)
             else:
                 st.warning(f"Please enter text and select question types for Page {idx+1}.")
 
@@ -331,7 +332,7 @@ def main():
 
     # Process images if any, otherwise process text or image content
     if images:
-        process_images(images)
+        process_images(images, selected_language)  # Pass the selected_language here
     else:
         user_input = st.text_area("Enter your text or question about the image:", value=text_content)
         learning_goals = st.text_area("Learning Goals (Optional):")
@@ -357,7 +358,7 @@ def main():
         - The cost of usage depends on the **length of the input** (ranging from $0.01 to $0.1).
         - Each selected question type will cost approximately $0.01.
         """)
-
+    
         # Generate questions button
         if st.button("Generate Questions"):
             if user_input or image_content and selected_types:
@@ -367,6 +368,7 @@ def main():
                 st.warning("Please enter some text, upload a file, or upload an image.")
             elif not selected_types:
                 st.warning("Please select at least one question type.")
+
 
 if __name__ == "__main__":
     main()
