@@ -327,6 +327,10 @@ def main():
         - **multiple_choice3.md**: 3 out of 4 correct answers
         - **multiple_choice4.md**: 4 out of 4 correct answers
         """)
+         st.markdown("""
+        **Inline/FiB:**
+        - Warning: The Inline und FiB questions are identical in content. FiB = type the missing word. Inline = choose the missing word
+        """)
         st.markdown("""
         **Cost Information:**
         - The cost of usage depends on the length of the input (ranging from $0.01 to $0.1).
