@@ -361,9 +361,9 @@ def main():
         st.markdown("""
         **Multiple Choice:**
         - All multiple-choice questions have a **maximum of 3 points**.
-        - **multiple_choice1.md**: **1 out of 4** correct answers
-        - **multiple_choice2.md**: **2 out of 4** correct answers
-        - **multiple_choice3.md**: **3 out of 4** correct answers
+        - **multiple_choice1**: **1 out of 4** correct answers
+        - **multiple_choice2**: **2 out of 4** correct answers
+        - **multiple_choice3**: **3 out of 4** correct answers
         """)
         st.markdown("""
         **Inline/FiB:**
