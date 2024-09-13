@@ -367,12 +367,23 @@ def main():
         """)
         st.markdown("""
         **Inline/FiB:**
-        - Warning: The **Inline** und **FiB** questions are identical in content. FiB = **type** the missing word. Inline = **choose** the missing word
+        - ❗ The **Inline** und **FiB** questions are identical in content. FiB = **type** the missing word. Inline = **choose** the missing word
         """)
         st.markdown("""
         **Cost Information:**
         - The cost of usage depends on the **length of the input** (ranging from $0.01 to $0.1).
         - Each selected question type will cost approximately $0.01.
+        """)
+         st.markdown("""
+        **Other Question Types:**
+        - single_choice 4 Answers, 1 Point per Question
+        - KPRIM 4 Answers, 5 Points 4/4 correct, 2.5 Points 3/4 correct, 0 Points 50% or less correct
+        - Truefalse 3 Answers, 3 Points per Question
+        - Drag&Drop variable Points
+        """)
+        st.markdown("""
+        **⚠ Always double check Total Points = Sum of correct answers Points**
+        **⚠ Always double check the content of the answers.**
         """)
     
         # Generate questions button
