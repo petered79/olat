@@ -333,7 +333,8 @@ def main():
         if uploaded_file.type == "application/pdf":
             text_content = extract_text_from_pdf(uploaded_file)
             if text_content:
-                st.success("Text extracted from PDF. You can now edit it in the text area below.")
+                st.success(""Text aus PDF extrahiert. Sie können es nun im folgenden Textfeld bearbeiten. PDFs, die länger als 5 Seiten sind, sollten gekürzt werden."
+")
             else:
                 images = convert_pdf_to_images(uploaded_file)
                 st.success("PDF converted to images. You can now ask questions about each page.")
