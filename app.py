@@ -30,10 +30,13 @@ MESSAGE_TYPES = [
 ]
 
 @st.cache_data
-def read_prompt_from_md(filename):
-    """Read the prompt from a markdown file and cache the result."""
-    with open(f"{filename}.md", "r") as file:
-        return file.read()
+def read_prompt_from_md(md_key):
+    """Fetch the markdown prompt content from Streamlit secrets."""
+    try:
+        return st.secrets["prompts"][md_key]
+    except KeyError:
+        st.error(f"Error: The key '{md_key}' does not exist in secrets.")
+        return ""
 
 def process_image(_image):
     """Process and resize an image to reduce memory footprint."""
@@ -63,7 +66,6 @@ def process_image(_image):
 def replace_german_sharp_s(text):
     """Replace all occurrences of 'ß' with 'ss'."""
     return text.replace('ß', 'ss')
-
 
 def clean_json_string(s):
     s = s.strip()
@@ -163,7 +165,6 @@ def transform_output(json_string):
         st.code(json_string)
         return "Error: Unable to process input"
 
-
 def get_chatgpt_response(prompt, image=None, selected_language="English"):
     """Fetch response from OpenAI GPT with error handling."""
     try:
@@ -233,7 +234,7 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
     all_responses = ""
     generated_content = {}
     for msg_type in selected_types:
-        prompt_template = read_prompt_from_md(msg_type)
+        prompt_template = read_prompt_from_md(msg_type)  # Fetch the prompt dynamically based on the selected type
         full_prompt = f"{prompt_template}\n\nUser Input: {user_input}\n\nLearning Goals: {learning_goals}"
         try:
             response = get_chatgpt_response(full_prompt, image=image, selected_language=selected_language)
@@ -266,7 +267,6 @@ def generate_questions_with_image(user_input, learning_goals, selected_types, im
             file_name="all_responses.txt",
             mime="text/plain"
         )
-
 
 @st.cache_data
 def convert_pdf_to_images(file):
